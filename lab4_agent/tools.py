@@ -91,13 +91,7 @@ def search_flights(origin: str, destination: str) -> str:
     Trả về danh sách chuyến bay với hãng, giờ bay, giá vé.
     Nếu không tìm thấy tuyến bay, trả về thông báo không có chuyến.
     """
-    # TODO: Sinh viên tự triển khai
-    # - Tra cứu FLIGHTS_DB với key (origin, destination)
-    # - Nếu tìm thấy → format danh sách chuyến bay dễ đọc, bao gồm giá tiền
-    # - Nếu không tìm thấy → thử tra ngược (destination, origin) xem có không,
-    # nếu cũng không có → "Không tìm thấy chuyến bay từ X đến Y."
-    # - Gợi ý: format giá tiền có dấu chấm phân cách (1.450.000đ)
-    # search_flights: phải xử lý tuple key, thử tra ngược chiều
+
     flights = FLIGHTS_DB.get((origin, destination))
     if not flights:
         flights = FLIGHTS_DB.get((destination, origin))
@@ -117,13 +111,6 @@ def search_hotels(city: str, max_price_per_night: int = 99999999) -> str:
     - max_price_per_night: giá tối đa mỗi đêm (VNĐ), mặc định không giới hạn
     Trả về danh sách khách sạn phù hợp với tên, số sao, giá, khu vực, rating.
     """
-    # TODO: Sinh viên tự triển khai
-    # - Tra cứu HOTELS_DB[city]
-    # - Lọc theo max_price_per_night
-    # - Sắp xếp theo rating giảm dần
-    # - Format đẹp. Nếu không có kết quả → "Không tìm thấy khách sạn tại X
-    # với giá dưới Y/đêm. Hãy thử tăng ngân sách."
-    # search_hotels: phải lọc + sắp xếp, không chỉ lookup
     hotels = HOTELS_DB.get(city, [])
     filtered_hotels = [h for h in hotels if h['price_per_night'] <= max_price_per_night]
     filtered_hotels.sort(key=lambda x: x['rating'], reverse=True)
@@ -145,21 +132,6 @@ def calculate_budget(total_budget: int, expenses: str) -> str:
     Trả về bảng chi tiết các khoản chi và số tiền còn lại.
     Nếu vượt ngân sách, cảnh báo rõ ràng số tiền thiếu.
     """
-    # TODO: Sinh viên tự triển khai
-    # - Parse chuỗi expenses thành dict {tên: số_tiền}
-    # - Tính tổng chi phí
-    # - Tính số tiền còn lại = total_budget - tổng chi phí
-    # - Format bảng chi tiết:
-    # Bảng chi phí:
-    # - Vé máy bay: 890.000đ
-    # - Khách sạn: 650.000đ
-    # ---
-    # Tổng chi: 1.540.000đ
-    # Ngân sách: 5.000.000đ
-    # Còn lại: 3.460.000đ
-    # - Nếu âm → "Vượt ngân sách X đồng! Cần điều chỉnh."
-    # - Xử lý lỗi: nếu expenses format sai → trả về thông báo lỗi rõ ràng
-    # calculate_budget: phải parse chuỗi, xử lý format lỗi, tính toán thực sự
     try:
         expenses_dict = {}
         for item in expenses.split(','):
