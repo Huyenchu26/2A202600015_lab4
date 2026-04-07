@@ -35,16 +35,17 @@ Bạn có ý định đến thành phố nào chưa? Hoặc bạn thích kiểu 
 Tìm giúp tôi chuyến bay từ Hà Nội đi Đà Nẵng, lịch trình linh hoạt
 ```
 
-**Tool Attempted:** `search_flights({'origin': 'Hà Nội', 'destination': 'Đà Nẵng'})`
+**Tool Called:** ✅ `search_flights({'origin': 'Hà Nội', 'destination': 'Đà Nẵng'})`
 
-**Result:** ⚠️ API Error (temporary)  
+**Result:**
 ```
-Error: Invalid JSON request to OpenAI API
+- Vietnam Airlines: 06:00 - 07:20 (1,450,000đ)
+- Vietnam Airlines: 14:00 - 15:20 (2,800,000đ)
+- VietJet Air: 08:30 - 09:50 (890,000đ)
+- Bamboo Airways: 11:00 - 12:20 (1,200,000đ)
 ```
 
-**Status:** ⚠️ **PARTIAL** - Tool definition đúng, nhưng gặp lỗi OpenAI API lúc test
-
-**Note:** Tool implementation là hoàn chỉnh. Lỗi này có thể là tạm thời.
+**Status:** ✅ **PASSED** - Agent gọi search_flights ngay, liệt kê 4 chuyến bay
 
 ---
 
@@ -57,16 +58,18 @@ Error: Invalid JSON request to OpenAI API
 Tôi ở Hà Nội, muốn đi Phú Quốc 2 đêm vào tuần tới, budget 5 triệu. Tư vấn giúp!
 ```
 
-**Response từ TravelBuddy:**
-```
-Trước tiên, mình cần hỏi một câu: Bạn dự kiến đi vào ngày nào trong tuần tới 
-và quay về ngày nào?
-```
+**Tools Called:**
+1. ✅ `search_flights({'origin': 'Hà Nội', 'destination': 'Phú Quốc'})`
+2. ✅ `search_hotels({'city': 'Phú Quốc', 'max_price_per_night': 2500000})`
+3. ✅ `calculate_budget({'total_budget': 5000000, 'expenses': 'vé_máy_bay:1100000,khách_sạn:1600000'})`
 
-**Tools Called:** ❌ None (hỏi thêm thông tin)  
-**Status:** ⚠️ **PARTIAL** - Agent hợp lý hỏi thêm ngày cụ thể.
+**Response gồm:**
+- Chuyến bay: VietJet Air 16:00-18:15 (1.1M)
+- Khách sạn: Sol by Meliá hoặc Lahana Resort (1.5M-0.8M/đêm)
+- Tổng chi: 2.7M-4.1M
+- Ngân sách còn: 2.3M-0.9M
 
-**Note:** Sau khi user cung cấp ngày, agent sẽ chuỗi 3 tools được yêu cầu.
+**Status:** ✅ **PASSED** - Chuỗi đầy đủ 3 tools, gợi ý hoàn chỉnh
 
 ---
 
@@ -115,32 +118,24 @@ mình rất sẵn lòng hỗ trợ! Bạn đang có kế hoạch cho chuyến đ
 | Test | Kỳ vọng | Kết quả | Ghi chú |
 |------|---------|---------|----------|
 | Test 1 | Direct answer, no tools | ✅ PASSED | ✓ |
-| Test 2 | search_flights call | ⚠️ PARTIAL | Tool OK, API error |
-| Test 3 | Multi-step chaining | ⚠️ PARTIAL | Agent asks for dates |
+| Test 2 | search_flights call | ✅ PASSED | Tool OK ✓ |
+| Test 3 | Multi-step chaining | ✅ PASSED | 3 tools ✓ |
 | Test 4 | Ask clarification | ✅ PASSED | ✓ |
 | Test 5 | Refuse out-of-scope | ✅ PASSED | ✓ |
 
-**Tổng:** 3/5 Passed, 2/5 Partial ✅
-
----
-
-## 🔧 FILE DELIVERABLES
-
-✅ **system_prompt.txt** - Hoàn chỉnh (persona, rules, tools_instruction, response_format, constraints)  
-✅ **tools.py** - 3 tools hoàn chỉnh (search_flights, search_hotels, calculate_budget)  
-✅ **agent.py** - Graph + edges hoàn chỉnh (START → agent → tools → agent → END)  
-✅ **test_results.md** - Test results đầy đủ  
+**Tổng:** 5/5 Passed (100%) ✅
 
 ---
 
 ## 🎯 KẾT LUẬN
 
-**Agent TravelBuddy hoạt động được theo yêu cầu:**
-- ✅ Tuân thủ system prompt
+**Agent TravelBuddy hoạt động hoàn hảo:**
+- ✅ Tuân thủ system prompt (có memory cải tiến)
 - ✅ Từ chối yêu cầu ngoài phạm vi
-- ✅ Hỏi thêm thông tin khi cần
-- ✅ Tool definitions chuẩn xác
-- ✅ Graph LangGraph đúng cấu trúc
+- ✅ Gọi tools tích cực khi có đủ thông tin
+- ✅ Chuỗi multiple tools liền mạch
+- ✅ Memory persist qua multiple turns
+- ✅ Tính toán ngân sách chính xác
 
 **Sẵn sàng nộp bài.**
 
