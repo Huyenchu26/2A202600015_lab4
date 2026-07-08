@@ -50,8 +50,13 @@
 
 ### Ngày 3 — Làm sạch dữ liệu ⏱ cả ngày
 **Mục tiêu:** Xử lý dữ liệu bẩn có phương pháp.
-**Bài tập:** Trên dataset bẩn (thiếu, trùng, sai định dạng, chuỗi lộn xộn), làm sạch và **ghi lại quyết định** cho từng vấn đề.
-**Hướng dẫn đáp án:** `drop_duplicates`; xử lý thiếu bằng `dropna`/`fillna` — **phải giải thích vì sao chọn cách đó**, không xóa/điền tùy tiện; `astype` đổi kiểu; `str.strip/lower/replace` chuẩn hóa; nhận diện outlier. Điểm mấu chốt: **mọi thao tác đều có lý do ghi chú**, vì với dữ liệu khách hàng, xóa nhầm = mất thông tin thật.
+**Bài tập:** Dùng lại chính file `docs/users_7_7_2026 2_49_38 AM.csv` — đây là dữ liệu thật nên đã "bẩn" sẵn. Làm sạch có phương pháp và **ghi lại quyết định** cho từng vấn đề. Tối thiểu xử lý 5 loại lỗi sau:
+1. **Giá trị không đồng nhất** ở `Usage location`: có cả `VN`, `Việt Nam`, `Thái Bình`, `Văn phòng Hà Nội`, `VBIM`… — chuẩn hóa về một bộ mã nhất quán (VD gom về `VN`).
+2. **Ô thiếu (NaN)**: nhiều cột trống nhiều (VD `Department` ~959 ô trống, `Preferred language`, `City`). Quyết định giữ NaN / điền `"Unknown"` / bỏ cột — và **giải thích vì sao**.
+3. **Sai định dạng thời gian**: `When created`, `Last password change time stamp` có hậu tố `Z` — đổi sang datetime bằng `pd.to_datetime(...)`.
+4. **Chuỗi lộn xộn / sai cột**: `Preferred language` lẫn cả số điện thoại (`'+84...`, `0964...`); số điện thoại ở `Mobile Phone`/`Phone number` nhiều định dạng — chuẩn hóa (`str.strip/replace`, regex) hoặc đánh dấu giá trị không hợp lệ.
+5. **Bản ghi trùng**: kiểm tra trùng theo `User principal name` (khóa định danh) thay vì theo `Display name` — giải thích lý do chọn khóa.
+**Hướng dẫn đáp án:** `drop_duplicates(subset=...)`; xử lý thiếu bằng `dropna`/`fillna` — **phải giải thích vì sao chọn cách đó**, không xóa/điền tùy tiện; `astype`/`pd.to_datetime` đổi kiểu; `str.strip/lower/replace`, `.replace({...})`, regex để chuẩn hóa; nhận diện outlier/giá trị lạc cột. Điểm mấu chốt: **mọi thao tác đều có lý do ghi chú**, vì với dữ liệu người dùng thật, xóa nhầm = mất thông tin thật.
 **DoD:**
 - [ ] Sau làm sạch: 0 dòng trùng, dtypes đúng, chuỗi đã chuẩn hóa.
 - [ ] Có bảng/ghi chú "vấn đề → cách xử lý → lý do" cho từng loại lỗi.
