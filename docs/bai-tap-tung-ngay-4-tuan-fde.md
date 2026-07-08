@@ -37,8 +37,13 @@
 
 ### Ngày 2 — Python cho dữ liệu (pandas cơ bản) ⏱ cả ngày
 **Mục tiêu:** Đọc, khám phá, lọc dữ liệu bằng pandas.
-**Bài tập:** Nhận 1 dataset (CSV). Trả lời 5 câu hỏi phân tích (VD: có bao nhiêu bản ghi, phân bố theo nhóm X, top 5 theo tiêu chí Y…) bằng pandas trong notebook.
-**Hướng dẫn đáp án:** Dùng `read_csv`, `.head()/.info()/.describe()`, boolean indexing, `.loc`, `groupby().agg()`, `sort_values`. Bẫy thường gặp: sai dtype khi đọc, bỏ sót NaN làm lệch thống kê. Đáp án tốt có ghi chú ngắn cho mỗi kết quả.
+**Bài tập:** Dùng dataset `docs/users_7_7_2026 2_49_38 AM.csv` (bản export danh bạ người dùng Microsoft 365). Trả lời 5 câu hỏi phân tích sau bằng pandas trong notebook:
+1. Tổng cộng có bao nhiêu bản ghi người dùng trong file?
+2. Phân bố người dùng theo `Usage location` (hoặc `CountryOrRegion`) — mỗi giá trị có bao nhiêu tài khoản, sắp xếp giảm dần?
+3. Top 5 `Department` (phòng ban) có nhiều tài khoản nhất là gì?
+4. Có bao nhiêu tài khoản đặt `Password never expires = True`? Chiếm bao nhiêu % tổng số? (góc nhìn bảo mật)
+5. Số tài khoản được tạo mới (`When created`) theo từng năm là bao nhiêu?
+**Hướng dẫn đáp án:** Dùng `read_csv`, `.head()/.info()/.describe()`, boolean indexing, `.loc`, `value_counts()`, `groupby().agg()`, `sort_values`; với câu 5 chuyển `When created` sang datetime bằng `pd.to_datetime(...)` rồi lấy `.dt.year`. Bẫy thường gặp: sai dtype khi đọc (nhiều cột toàn NaN), ô trống ở `Usage location`/`Department` bị bỏ sót làm lệch thống kê (cân nhắc `dropna=False` trong `value_counts`). Đáp án tốt có ghi chú ngắn cho mỗi kết quả.
 **DoD:**
 - [ ] Notebook chạy từ trên xuống không lỗi.
 - [ ] 5 câu hỏi đều có code + kết quả + 1 câu diễn giải.
