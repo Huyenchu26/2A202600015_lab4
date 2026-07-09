@@ -76,6 +76,8 @@ Khuyến khích intern trả lời **cùng 1 câu hỏi bằng cả SQL và pand
 - [ ] 6 truy vấn chạy đúng, trả đúng 6 câu hỏi.
 - [ ] Có ít nhất 1 truy vấn dùng `JOIN` và 1 dùng `GROUP BY`.
 
+**Cách nộp bài:** Nộp notebook `docs/day4.ipynb` (đã có khung sẵn: nạp bảng `users` + `departments` + placeholder 6 câu). Trong notebook, **mỗi câu = 1 ô markdown (câu hỏi) + 1 ô code (`pd.read_sql`) + 1 câu diễn giải kết quả**; câu SQL đặt trong chuỗi `"""..."""`. Có thể kèm file `docs/day4.sql` gom SQL thuần cho mentor đọc nhanh. Trước khi nộp: **Restart & Run All** chạy không lỗi. Làm trên nhánh `feature/huynq`, commit `day 4: SQL queries on users dataset`, **không commit lại file CSV** (dữ liệu nội bộ — ghi rõ đường dẫn để mentor tự đặt vào `docs/`).
+
 > **Nâng cao (Advanced) — SQL phức tạp hơn:** làm thêm ≥3 trong 5 câu sau (mỗi câu buộc dùng một kỹ thuật nâng cao):
 > 7. **(HAVING)** Liệt kê các `Department` có **hơn 100** tài khoản — dùng `GROUP BY ... HAVING COUNT(*) > 100` (không được lọc bằng `WHERE COUNT(*)`).
 > 8. **(Window — running total)** Số tài khoản tạo **lũy kế** theo năm: `SUM(COUNT(*)) OVER (ORDER BY nam)` — so sánh với số tạo mới mỗi năm ở câu 3 để thấy tổng cộng dồn tiến tới 1900.
@@ -92,8 +94,22 @@ Khuyến khích intern trả lời **cùng 1 câu hỏi bằng cả SQL và pand
 
 ### Ngày 5 — EDA + insight + review tuần ⏱ cả ngày
 **Mục tiêu:** Tổng hợp kỹ năng tuần thành sản phẩm có giá trị.
-**Bài tập:** Trên dataset đã làm sạch, làm EDA và rút **3 insight** có số liệu + biểu đồ; viết đoạn tóm tắt cho người **không chuyên**.
-**Hướng dẫn đáp án:** EDA có cấu trúc (phân bố, tương quan, nhóm nổi bật), biểu đồ cơ bản bằng matplotlib. Insight tốt = **có số liệu chứng minh + hàm ý hành động**, không phải mô tả suông ("doanh thu nhóm A cao gấp 3 nhóm B, nên ưu tiên…"). Tóm tắt tránh thuật ngữ kỹ thuật.
+**Bài tập:** Trên dataset đã làm sạch ở Ngày 3 (`docs/users_7_7_2026 2_49_38 AM.csv`), làm EDA và rút **3 insight** có số liệu + biểu đồ; viết đoạn tóm tắt cho người **không chuyên**. Làm theo 3 phần:
+
+**A. EDA có cấu trúc (tối thiểu 3 biểu đồ, dùng matplotlib):**
+1. **Tăng trưởng tài khoản theo năm** — biểu đồ cột/đường số tài khoản tạo mới theo `When created` (2018→2026). Chú ý năm đỉnh.
+2. **Top 10 `Department`** — biểu đồ cột ngang (`barh`), sắp xếp giảm dần.
+3. **Chất lượng dữ liệu** — biểu đồ cột **tỷ lệ ô trống (%)** của từng cột (`df.isna().mean().sort_values()`), để lộ các cột gần như rỗng.
+4. *(khuyến khích)* Một biểu đồ về **bảo mật**: tỷ lệ `Password never expires` và `Block credential` (tài khoản hoạt động vs bị chặn).
+
+**B. Rút 3 insight** — mỗi insight = **1 con số cụ thể + hàm ý hành động** (không mô tả suông). Gợi ý hướng khai thác (intern tự kiểm chứng lại số từ dữ liệu):
+- *Tăng trưởng:* năm nào onboard nhiều nhất, gấp bao nhiêu lần năm trước → hàm ý về quy mô/đợt tuyển.
+- *Bảo mật:* tỷ lệ tài khoản `Password never expires = True` cao bất thường → khuyến nghị chính sách hết hạn mật khẩu.
+- *Chất lượng dữ liệu:* bao nhiêu % tài khoản thiếu `Department`/`City`/`Title` → danh bạ chưa đủ để phân tích tổ chức, cần chuẩn hóa khâu nhập liệu.
+
+**C. Tóm tắt cho người không chuyên** — 1 đoạn ≤150 từ, không thuật ngữ kỹ thuật, nêu được "phát hiện chính + nên làm gì".
+
+**Hướng dẫn đáp án:** EDA có cấu trúc (phân bố, nhóm nổi bật, mức độ đầy đủ dữ liệu), biểu đồ cơ bản bằng matplotlib (đặt title/nhãn trục rõ ràng). Insight tốt = **có số liệu chứng minh + hàm ý hành động**, không phải mô tả suông ("nhóm A gấp 3 nhóm B → nên ưu tiên…"). Điểm cộng: intern **tự phản biện con số bất thường** (VD 100% password-never-expires thì phải nghi ngờ và nêu rủi ro, không im lặng chấp nhận). Tóm tắt tránh thuật ngữ kỹ thuật, viết như báo cáo cho quản lý.
 **DoD:**
 - [ ] Notebook chạy end-to-end; có ≥3 biểu đồ.
 - [ ] 3 insight, mỗi cái kèm số liệu; 1 đoạn tóm tắt ≤150 từ cho người không chuyên.
