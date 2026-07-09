@@ -63,11 +63,32 @@
 
 ### Ngày 4 — SQL trên dữ liệu ⏱ cả ngày
 **Mục tiêu:** Truy vấn dữ liệu bằng SQL.
-**Bài tập:** Nạp dữ liệu vào SQLite/DuckDB. Viết 6 truy vấn trả lời 6 câu hỏi nghiệp vụ (lọc, tổng hợp theo nhóm, join 2 bảng).
-**Hướng dẫn đáp án:** `WHERE`, `GROUP BY` + `COUNT/SUM/AVG`, `ORDER BY`, `JOIN`. Khuyến khích intern đối chiếu cùng câu hỏi giữa **SQL và pandas** để thấy tương đương. Bẫy: quên `GROUP BY` khi dùng hàm tổng hợp; join sai khóa.
+**Bài tập:** Nạp file `docs/users_7_7_2026 2_49_38 AM.csv` vào SQLite/DuckDB thành bảng `users` (VD `df.to_sql("users", conn)`). Tự tạo thêm **1 bảng tra cứu `departments`** gồm các cột `dept_code, dept_name, company` (khoảng 6–10 dòng cho các mã phòng có thật: `TDI`, `BKVN`, `TDME`, `TDICONS`, `Techcon`, `PTC`, `XL247`…) để phục vụ JOIN. Viết 6 truy vấn trả lời 6 câu hỏi nghiệp vụ sau:
+1. **(WHERE)** Có bao nhiêu tài khoản bị chặn đăng nhập (`"Block credential" = 1`)?
+2. **(GROUP BY + COUNT + ORDER BY)** Mỗi `Department` có bao nhiêu tài khoản? Sắp xếp giảm dần, lấy top 5.
+3. **(GROUP BY theo năm)** Số tài khoản tạo mới mỗi năm — trích năm từ `"When created"` bằng `substr("When created",1,4)`.
+4. **(WHERE + COUNT + %)** Tỷ lệ tài khoản `"Password never expires" = 1` trên tổng số (góc nhìn bảo mật).
+5. **(JOIN)** Join `users` với `departments` theo khóa `users."Department" = departments.dept_code`, đếm số tài khoản theo **`company`** (khối/công ty) và hiển thị `dept_name`.
+6. **(NULL / data quality)** Có bao nhiêu tài khoản **không có** `Department` (giá trị NULL)?
+Khuyến khích intern trả lời **cùng 1 câu hỏi bằng cả SQL và pandas** (VD câu 2, 3) để thấy hai cách tương đương.
+**Hướng dẫn đáp án:** `WHERE`, `GROUP BY` + `COUNT/SUM/AVG`, `ORDER BY`, `JOIN ... ON`, `IS NULL`. Lưu ý: tên cột có dấu cách phải để trong nháy kép (`"Block credential"`); bool trong pandas nạp vào SQLite thành `0/1`; `"When created"` là text có hậu tố `Z` nên dùng `substr(...,1,4)` để lấy năm thay vì `strftime`. Bẫy: quên `GROUP BY` khi dùng hàm tổng hợp; join sai khóa (dept_code ↔ Department); quên `IS NULL` (dùng `= NULL` sẽ luôn sai).
 **DoD:**
 - [ ] 6 truy vấn chạy đúng, trả đúng 6 câu hỏi.
 - [ ] Có ít nhất 1 truy vấn dùng `JOIN` và 1 dùng `GROUP BY`.
+
+> **Nâng cao (Advanced) — SQL phức tạp hơn:** làm thêm ≥3 trong 5 câu sau (mỗi câu buộc dùng một kỹ thuật nâng cao):
+> 7. **(HAVING)** Liệt kê các `Department` có **hơn 100** tài khoản — dùng `GROUP BY ... HAVING COUNT(*) > 100` (không được lọc bằng `WHERE COUNT(*)`).
+> 8. **(Window — running total)** Số tài khoản tạo **lũy kế** theo năm: `SUM(COUNT(*)) OVER (ORDER BY nam)` — so sánh với số tạo mới mỗi năm ở câu 3 để thấy tổng cộng dồn tiến tới 1900.
+> 9. **(Window RANK + PARTITION + JOIN)** Sau khi join `departments`, trong **mỗi `company`** hãy xếp hạng các phòng ban theo số tài khoản: `RANK() OVER (PARTITION BY company ORDER BY COUNT(*) DESC)` và chỉ giữ hạng 1 của mỗi khối.
+> 10. **(CTE + tỷ trọng)** Dùng `WITH` tính số tài khoản mỗi `Department`, rồi tính **% của từng phòng trên tổng toàn công ty** bằng `COUNT(*) * 100.0 / SUM(COUNT(*)) OVER ()`.
+> 11. **(CASE WHEN — conditional aggregation / pivot)** Với mỗi năm tạo, đếm **song song** trên cùng một hàng: số tài khoản bị chặn và số tài khoản hoạt động — `SUM(CASE WHEN "Block credential"=1 THEN 1 ELSE 0 END)` vs `SUM(CASE WHEN "Block credential"=0 THEN 1 ELSE 0 END)`.
+>
+> **Nâng cao (xử lý cột `Licenses` đa giá trị):**
+> 12. Đếm số tài khoản có gán gói `Microsoft 365 Business Basic` — dùng `WHERE "Licenses" LIKE '%Business Basic%'`.
+> 13. Ước lượng **số license trung bình mỗi tài khoản**: các gói nối bằng dấu `+`, nên số license = `LENGTH("Licenses") - LENGTH(REPLACE("Licenses",'+','')) + 1`; lấy `AVG(...)` (bỏ qua ô rỗng bằng `WHERE "Licenses" <> ''`).
+> 14. *(DuckDB)* Nếu dùng DuckDB, tách `Licenses` thành nhiều dòng bằng `string_split` + `UNNEST`, rồi `GROUP BY` để tìm **top 5 gói license phổ biến nhất** trong toàn hệ thống.
+>
+> **Bẫy nâng cao:** dùng `WHERE` cho điều kiện trên hàng, `HAVING` cho điều kiện trên nhóm; window function không được đặt trong `WHERE` (phải bọc bằng subquery/CTE rồi lọc ở ngoài); `RANK` vs `ROW_NUMBER` khác nhau khi có đồng hạng.
 
 ### Ngày 5 — EDA + insight + review tuần ⏱ cả ngày
 **Mục tiêu:** Tổng hợp kỹ năng tuần thành sản phẩm có giá trị.
