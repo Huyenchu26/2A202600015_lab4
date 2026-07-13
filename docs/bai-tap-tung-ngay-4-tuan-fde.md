@@ -76,6 +76,8 @@ Khuyến khích intern trả lời **cùng 1 câu hỏi bằng cả SQL và pand
 - [ ] 6 truy vấn chạy đúng, trả đúng 6 câu hỏi.
 - [ ] Có ít nhất 1 truy vấn dùng `JOIN` và 1 dùng `GROUP BY`.
 
+**Cách nộp bài:** Nộp notebook `docs/day4.ipynb` (đã có khung sẵn: nạp bảng `users` + `departments` + placeholder 6 câu). Trong notebook, **mỗi câu = 1 ô markdown (câu hỏi) + 1 ô code (`pd.read_sql`) + 1 câu diễn giải kết quả**; câu SQL đặt trong chuỗi `"""..."""`. Có thể kèm file `docs/day4.sql` gom SQL thuần cho mentor đọc nhanh. Trước khi nộp: **Restart & Run All** chạy không lỗi. Làm trên nhánh `feature/huynq`, commit `day 4: SQL queries on users dataset`, **không commit lại file CSV** (dữ liệu nội bộ — ghi rõ đường dẫn để mentor tự đặt vào `docs/`).
+
 > **Nâng cao (Advanced) — SQL phức tạp hơn:** làm thêm ≥3 trong 5 câu sau (mỗi câu buộc dùng một kỹ thuật nâng cao):
 > 7. **(HAVING)** Liệt kê các `Department` có **hơn 100** tài khoản — dùng `GROUP BY ... HAVING COUNT(*) > 100` (không được lọc bằng `WHERE COUNT(*)`).
 > 8. **(Window — running total)** Số tài khoản tạo **lũy kế** theo năm: `SUM(COUNT(*)) OVER (ORDER BY nam)` — so sánh với số tạo mới mỗi năm ở câu 3 để thấy tổng cộng dồn tiến tới 1900.
@@ -92,8 +94,22 @@ Khuyến khích intern trả lời **cùng 1 câu hỏi bằng cả SQL và pand
 
 ### Ngày 5 — EDA + insight + review tuần ⏱ cả ngày
 **Mục tiêu:** Tổng hợp kỹ năng tuần thành sản phẩm có giá trị.
-**Bài tập:** Trên dataset đã làm sạch, làm EDA và rút **3 insight** có số liệu + biểu đồ; viết đoạn tóm tắt cho người **không chuyên**.
-**Hướng dẫn đáp án:** EDA có cấu trúc (phân bố, tương quan, nhóm nổi bật), biểu đồ cơ bản bằng matplotlib. Insight tốt = **có số liệu chứng minh + hàm ý hành động**, không phải mô tả suông ("doanh thu nhóm A cao gấp 3 nhóm B, nên ưu tiên…"). Tóm tắt tránh thuật ngữ kỹ thuật.
+**Bài tập:** Trên dataset đã làm sạch ở Ngày 3 (`docs/users_7_7_2026 2_49_38 AM.csv`), làm EDA và rút **3 insight** có số liệu + biểu đồ; viết đoạn tóm tắt cho người **không chuyên**. Làm theo 3 phần:
+
+**A. EDA có cấu trúc (tối thiểu 3 biểu đồ, dùng matplotlib):**
+1. **Tăng trưởng tài khoản theo năm** — biểu đồ cột/đường số tài khoản tạo mới theo `When created` (2018→2026). Chú ý năm đỉnh.
+2. **Top 10 `Department`** — biểu đồ cột ngang (`barh`), sắp xếp giảm dần.
+3. **Chất lượng dữ liệu** — biểu đồ cột **tỷ lệ ô trống (%)** của từng cột (`df.isna().mean().sort_values()`), để lộ các cột gần như rỗng.
+4. *(khuyến khích)* Một biểu đồ về **bảo mật**: tỷ lệ `Password never expires` và `Block credential` (tài khoản hoạt động vs bị chặn).
+
+**B. Rút 3 insight** — mỗi insight = **1 con số cụ thể + hàm ý hành động** (không mô tả suông). Gợi ý hướng khai thác (intern tự kiểm chứng lại số từ dữ liệu):
+- *Tăng trưởng:* năm nào onboard nhiều nhất, gấp bao nhiêu lần năm trước → hàm ý về quy mô/đợt tuyển.
+- *Bảo mật:* tỷ lệ tài khoản `Password never expires = True` cao bất thường → khuyến nghị chính sách hết hạn mật khẩu.
+- *Chất lượng dữ liệu:* bao nhiêu % tài khoản thiếu `Department`/`City`/`Title` → danh bạ chưa đủ để phân tích tổ chức, cần chuẩn hóa khâu nhập liệu.
+
+**C. Tóm tắt cho người không chuyên** — 1 đoạn ≤150 từ, không thuật ngữ kỹ thuật, nêu được "phát hiện chính + nên làm gì".
+
+**Hướng dẫn đáp án:** EDA có cấu trúc (phân bố, nhóm nổi bật, mức độ đầy đủ dữ liệu), biểu đồ cơ bản bằng matplotlib (đặt title/nhãn trục rõ ràng). Insight tốt = **có số liệu chứng minh + hàm ý hành động**, không phải mô tả suông ("nhóm A gấp 3 nhóm B → nên ưu tiên…"). Điểm cộng: intern **tự phản biện con số bất thường** (VD 100% password-never-expires thì phải nghi ngờ và nêu rủi ro, không im lặng chấp nhận). Tóm tắt tránh thuật ngữ kỹ thuật, viết như báo cáo cho quản lý.
 **DoD:**
 - [ ] Notebook chạy end-to-end; có ≥3 biểu đồ.
 - [ ] 3 insight, mỗi cái kèm số liệu; 1 đoạn tóm tắt ≤150 từ cho người không chuyên.
@@ -108,24 +124,42 @@ Khuyến khích intern trả lời **cùng 1 câu hỏi bằng cả SQL và pand
 
 ### Ngày 6 — Gọi LLM API lần đầu ⏱ cả ngày
 **Mục tiêu:** Gọi được LLM API, hiểu request/response và chi phí/độ trễ.
-**Bài tập:** Viết script gọi API cho 1 tác vụ đơn giản (tóm tắt / phân loại). Thử đổi `temperature`, `max_tokens` và quan sát khác biệt.
-**Hướng dẫn đáp án:** Cấu trúc messages, đọc field kết quả, `try/except` cho lỗi mạng. **Bắt buộc:** API key để trong biến môi trường (`os.environ`), **không hardcode, không commit key**. Nhận biết token ↔ chi phí ↔ độ trễ.
+**Bài tập:** Viết notebook gọi **OpenAI API** (SDK `openai`, model gợi ý `gpt-4o-mini`) cho 1 tác vụ đơn giản — **tóm tắt** hoặc **phân loại cảm xúc** một đoạn văn bản. Yêu cầu:
+1. Khởi tạo `client = OpenAI()` đọc key từ biến môi trường `OPENAI_API_KEY` — **không hardcode key trong code**.
+2. Viết hàm `ask(prompt, temperature, max_tokens)` gọi `client.chat.completions.create(...)`, trả về nội dung + số token (`resp.usage`) + độ trễ (đo bằng `time.perf_counter()`).
+3. Chạy trên **≥3 input** khác nhau, in kết quả.
+4. **Thí nghiệm:** cùng 1 prompt, đổi `temperature` (0 vs 1) và `max_tokens` — ghi lại khác biệt về nội dung, số token và độ trễ.
+5. Từ `usage.prompt_tokens`/`completion_tokens`, **ước tính chi phí** theo bảng giá model (kiểm tra giá hiện hành tại openai.com/pricing).
+**Hướng dẫn đáp án:** Cấu trúc `messages` (role `system`/`user`), đọc `resp.choices[0].message.content` và `resp.usage`; `try/except` cho `openai.APIError`/`RateLimitError`. **Bắt buộc:** API key trong env var (`os.environ["OPENAI_API_KEY"]`), **không hardcode, không commit key** (dùng `.env` + thêm vào `.gitignore`). Nhận biết token ↔ chi phí ↔ độ trễ: temperature cao → đa dạng hơn nhưng kém ổn định; max_tokens giới hạn độ dài đầu ra.
+**Cách nộp bài:** Nộp `docs/day6.ipynb` (đã có khung sẵn). **Restart & Run All** không lỗi; **kiểm tra kỹ notebook không lộ key** trước khi commit lên `feature/huynq`.
 **DoD:**
 - [ ] Script gọi API trả kết quả đúng cho ≥3 input.
+- [ ] Có thí nghiệm đổi `temperature`/`max_tokens` + bảng/ghi chú khác biệt token & độ trễ.
 - [ ] Key nằm trong env var; repo không chứa key.
 
 ### Ngày 7 — Prompt engineering ⏱ cả ngày
 **Mục tiêu:** Viết prompt hiệu quả và biết so sánh.
-**Bài tập:** Chọn 1 task (VD phân loại ticket hỗ trợ). Viết ≥3 biến thể prompt (zero-shot, few-shot, có ràng buộc định dạng). Lập bảng so sánh kết quả và chọn bản tốt nhất.
-**Hướng dẫn đáp án:** Nguyên tắc: hướng dẫn rõ ràng, ví dụ (few-shot), dùng dấu phân tách, yêu cầu chia bước. Đánh giá trên cùng bộ input để so sánh công bằng. Đáp án tốt **giải thích được vì sao** bản thắng lại thắng.
+**Bài tập:** Task cố định: **phân loại ticket hỗ trợ** vào một trong các nhãn `{Billing, Technical, Account, Other}` bằng **OpenAI API**. Notebook đã kèm sẵn **≥6 ticket mẫu có nhãn chuẩn (gold label)**. Viết **≥3 biến thể prompt** cho cùng task:
+1. **Zero-shot** — chỉ mô tả nhiệm vụ + danh sách nhãn.
+2. **Few-shot** — thêm 2–3 ví dụ mẫu (ticket → nhãn) vào prompt.
+3. **Ràng buộc định dạng** — yêu cầu chỉ trả về đúng 1 nhãn (VD "chỉ in ra 1 từ trong danh sách, không giải thích").
+Chạy cả 3 biến thể trên **cùng bộ ticket**, lập **bảng so sánh** (ticket × biến thể → nhãn dự đoán), tính **độ chính xác** mỗi biến thể so với gold label, và chọn bản tốt nhất.
+**Hướng dẫn đáp án:** Nguyên tắc: hướng dẫn rõ ràng, ví dụ (few-shot), dùng dấu phân tách (```), yêu cầu định dạng đầu ra chặt. Dùng `temperature=0` để kết quả ổn định khi so sánh. Đánh giá trên **cùng bộ input** để công bằng. Đáp án tốt **giải thích được vì sao** bản thắng lại thắng (VD few-shot giúp model bám nhãn hiếm).
+**Cách nộp bài:** Nộp `docs/day7.ipynb` (khung sẵn: ticket mẫu + 3 chỗ điền prompt + bảng so sánh). **Restart & Run All** không lỗi; commit trên `feature/huynq`.
 **DoD:**
 - [ ] ≥3 biến thể prompt cho cùng 1 task, chạy trên cùng ≥5 input.
-- [ ] Bảng so sánh + kết luận chọn bản nào & lý do.
+- [ ] Bảng so sánh + **độ chính xác từng biến thể** + kết luận chọn bản nào & lý do.
 
 ### Ngày 8 — Structured output & trích xuất ⏱ cả ngày
 **Mục tiêu:** Lấy dữ liệu máy-đọc-được (JSON) từ tài liệu tự do.
-**Bài tập:** Xây tool trích xuất các trường có cấu trúc (VD hóa đơn/email → JSON) trên ≥15 tài liệu mẫu.
-**Hướng dẫn đáp án:** Yêu cầu model trả **JSON đúng schema**; parse an toàn bằng `try/except`, **retry** khi JSON hỏng; có thể validate bằng pydantic. Phải xử lý được ít nhất 1 ca output lệch chuẩn (không sập chương trình).
+**Bài tập:** Xây tool dùng **OpenAI API** trích xuất các trường có cấu trúc từ văn bản tự do (hóa đơn/email → JSON) trên **≥15 tài liệu mẫu** (notebook kèm sẵn, gồm **≥1 tài liệu "khó/thiếu trường"** để test xử lý lỗi). Yêu cầu:
+1. Định nghĩa **schema** (khuyến nghị `pydantic`, VD `Invoice{vendor, date, total, currency, items[]}`).
+2. Gọi API ở **JSON mode** (`response_format={"type": "json_object"}`) và yêu cầu trả **đúng schema** trong system prompt.
+3. **Parse an toàn** bằng `json.loads` trong `try/except`; **retry 1 lần** khi JSON hỏng; validate bằng pydantic.
+4. Chạy trên cả 15 tài liệu → gom vào 1 bảng (DataFrame).
+5. So với **ground truth** kèm sẵn để đo **độ chính xác trích xuất** (VD ≥85%).
+**Hướng dẫn đáp án:** Yêu cầu model trả **JSON đúng schema**; `temperature=0`; parse an toàn `try/except`, **retry** khi JSON hỏng; validate `pydantic` (bắt `ValidationError`). Phải xử lý được ít nhất **1 ca output lệch chuẩn** (thiếu trường/không phải JSON) mà **không sập chương trình** — ghi tài liệu đó là `need_review` thay vì crash.
+**Cách nộp bài:** Nộp `docs/day8.ipynb` (khung sẵn: 15 tài liệu mẫu + ground truth + schema + hàm `extract` có retry). **Restart & Run All** không lỗi; commit trên `feature/huynq`.
 **DoD:**
 - [ ] Tool chạy trên ≥15 tài liệu, xuất JSON/bảng đúng schema.
 - [ ] Có xử lý lỗi khi model trả JSON sai (không crash).
