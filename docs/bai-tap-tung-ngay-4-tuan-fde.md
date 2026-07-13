@@ -124,24 +124,42 @@ Khuyến khích intern trả lời **cùng 1 câu hỏi bằng cả SQL và pand
 
 ### Ngày 6 — Gọi LLM API lần đầu ⏱ cả ngày
 **Mục tiêu:** Gọi được LLM API, hiểu request/response và chi phí/độ trễ.
-**Bài tập:** Viết script gọi API cho 1 tác vụ đơn giản (tóm tắt / phân loại). Thử đổi `temperature`, `max_tokens` và quan sát khác biệt.
-**Hướng dẫn đáp án:** Cấu trúc messages, đọc field kết quả, `try/except` cho lỗi mạng. **Bắt buộc:** API key để trong biến môi trường (`os.environ`), **không hardcode, không commit key**. Nhận biết token ↔ chi phí ↔ độ trễ.
+**Bài tập:** Viết notebook gọi **OpenAI API** (SDK `openai`, model gợi ý `gpt-4o-mini`) cho 1 tác vụ đơn giản — **tóm tắt** hoặc **phân loại cảm xúc** một đoạn văn bản. Yêu cầu:
+1. Khởi tạo `client = OpenAI()` đọc key từ biến môi trường `OPENAI_API_KEY` — **không hardcode key trong code**.
+2. Viết hàm `ask(prompt, temperature, max_tokens)` gọi `client.chat.completions.create(...)`, trả về nội dung + số token (`resp.usage`) + độ trễ (đo bằng `time.perf_counter()`).
+3. Chạy trên **≥3 input** khác nhau, in kết quả.
+4. **Thí nghiệm:** cùng 1 prompt, đổi `temperature` (0 vs 1) và `max_tokens` — ghi lại khác biệt về nội dung, số token và độ trễ.
+5. Từ `usage.prompt_tokens`/`completion_tokens`, **ước tính chi phí** theo bảng giá model (kiểm tra giá hiện hành tại openai.com/pricing).
+**Hướng dẫn đáp án:** Cấu trúc `messages` (role `system`/`user`), đọc `resp.choices[0].message.content` và `resp.usage`; `try/except` cho `openai.APIError`/`RateLimitError`. **Bắt buộc:** API key trong env var (`os.environ["OPENAI_API_KEY"]`), **không hardcode, không commit key** (dùng `.env` + thêm vào `.gitignore`). Nhận biết token ↔ chi phí ↔ độ trễ: temperature cao → đa dạng hơn nhưng kém ổn định; max_tokens giới hạn độ dài đầu ra.
+**Cách nộp bài:** Nộp `docs/day6.ipynb` (đã có khung sẵn). **Restart & Run All** không lỗi; **kiểm tra kỹ notebook không lộ key** trước khi commit lên `feature/huynq`.
 **DoD:**
 - [ ] Script gọi API trả kết quả đúng cho ≥3 input.
+- [ ] Có thí nghiệm đổi `temperature`/`max_tokens` + bảng/ghi chú khác biệt token & độ trễ.
 - [ ] Key nằm trong env var; repo không chứa key.
 
 ### Ngày 7 — Prompt engineering ⏱ cả ngày
 **Mục tiêu:** Viết prompt hiệu quả và biết so sánh.
-**Bài tập:** Chọn 1 task (VD phân loại ticket hỗ trợ). Viết ≥3 biến thể prompt (zero-shot, few-shot, có ràng buộc định dạng). Lập bảng so sánh kết quả và chọn bản tốt nhất.
-**Hướng dẫn đáp án:** Nguyên tắc: hướng dẫn rõ ràng, ví dụ (few-shot), dùng dấu phân tách, yêu cầu chia bước. Đánh giá trên cùng bộ input để so sánh công bằng. Đáp án tốt **giải thích được vì sao** bản thắng lại thắng.
+**Bài tập:** Task cố định: **phân loại ticket hỗ trợ** vào một trong các nhãn `{Billing, Technical, Account, Other}` bằng **OpenAI API**. Notebook đã kèm sẵn **≥6 ticket mẫu có nhãn chuẩn (gold label)**. Viết **≥3 biến thể prompt** cho cùng task:
+1. **Zero-shot** — chỉ mô tả nhiệm vụ + danh sách nhãn.
+2. **Few-shot** — thêm 2–3 ví dụ mẫu (ticket → nhãn) vào prompt.
+3. **Ràng buộc định dạng** — yêu cầu chỉ trả về đúng 1 nhãn (VD "chỉ in ra 1 từ trong danh sách, không giải thích").
+Chạy cả 3 biến thể trên **cùng bộ ticket**, lập **bảng so sánh** (ticket × biến thể → nhãn dự đoán), tính **độ chính xác** mỗi biến thể so với gold label, và chọn bản tốt nhất.
+**Hướng dẫn đáp án:** Nguyên tắc: hướng dẫn rõ ràng, ví dụ (few-shot), dùng dấu phân tách (```), yêu cầu định dạng đầu ra chặt. Dùng `temperature=0` để kết quả ổn định khi so sánh. Đánh giá trên **cùng bộ input** để công bằng. Đáp án tốt **giải thích được vì sao** bản thắng lại thắng (VD few-shot giúp model bám nhãn hiếm).
+**Cách nộp bài:** Nộp `docs/day7.ipynb` (khung sẵn: ticket mẫu + 3 chỗ điền prompt + bảng so sánh). **Restart & Run All** không lỗi; commit trên `feature/huynq`.
 **DoD:**
 - [ ] ≥3 biến thể prompt cho cùng 1 task, chạy trên cùng ≥5 input.
-- [ ] Bảng so sánh + kết luận chọn bản nào & lý do.
+- [ ] Bảng so sánh + **độ chính xác từng biến thể** + kết luận chọn bản nào & lý do.
 
 ### Ngày 8 — Structured output & trích xuất ⏱ cả ngày
 **Mục tiêu:** Lấy dữ liệu máy-đọc-được (JSON) từ tài liệu tự do.
-**Bài tập:** Xây tool trích xuất các trường có cấu trúc (VD hóa đơn/email → JSON) trên ≥15 tài liệu mẫu.
-**Hướng dẫn đáp án:** Yêu cầu model trả **JSON đúng schema**; parse an toàn bằng `try/except`, **retry** khi JSON hỏng; có thể validate bằng pydantic. Phải xử lý được ít nhất 1 ca output lệch chuẩn (không sập chương trình).
+**Bài tập:** Xây tool dùng **OpenAI API** trích xuất các trường có cấu trúc từ văn bản tự do (hóa đơn/email → JSON) trên **≥15 tài liệu mẫu** (notebook kèm sẵn, gồm **≥1 tài liệu "khó/thiếu trường"** để test xử lý lỗi). Yêu cầu:
+1. Định nghĩa **schema** (khuyến nghị `pydantic`, VD `Invoice{vendor, date, total, currency, items[]}`).
+2. Gọi API ở **JSON mode** (`response_format={"type": "json_object"}`) và yêu cầu trả **đúng schema** trong system prompt.
+3. **Parse an toàn** bằng `json.loads` trong `try/except`; **retry 1 lần** khi JSON hỏng; validate bằng pydantic.
+4. Chạy trên cả 15 tài liệu → gom vào 1 bảng (DataFrame).
+5. So với **ground truth** kèm sẵn để đo **độ chính xác trích xuất** (VD ≥85%).
+**Hướng dẫn đáp án:** Yêu cầu model trả **JSON đúng schema**; `temperature=0`; parse an toàn `try/except`, **retry** khi JSON hỏng; validate `pydantic` (bắt `ValidationError`). Phải xử lý được ít nhất **1 ca output lệch chuẩn** (thiếu trường/không phải JSON) mà **không sập chương trình** — ghi tài liệu đó là `need_review` thay vì crash.
+**Cách nộp bài:** Nộp `docs/day8.ipynb` (khung sẵn: 15 tài liệu mẫu + ground truth + schema + hàm `extract` có retry). **Restart & Run All** không lỗi; commit trên `feature/huynq`.
 **DoD:**
 - [ ] Tool chạy trên ≥15 tài liệu, xuất JSON/bảng đúng schema.
 - [ ] Có xử lý lỗi khi model trả JSON sai (không crash).
