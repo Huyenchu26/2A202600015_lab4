@@ -167,16 +167,26 @@ Chạy cả 3 biến thể trên **cùng bộ ticket**, lập **bảng so sánh*
 
 ### Ngày 9 — RAG cơ bản ⏱ cả ngày
 **Mục tiêu:** Dựng pipeline RAG chạy đầu-cuối.
-**Bài tập:** Trên một bộ tài liệu nhỏ: chunk → embed → vector search → đưa ngữ cảnh vào prompt → trả lời có **trích nguồn**.
-**Hướng dẫn đáp án:** Chunk hợp lý (không quá to/nhỏ); embed + tìm theo cosine similarity; nhồi đoạn liên quan vào prompt và yêu cầu trả lời **chỉ dựa trên ngữ cảnh**, kèm nguồn. Bẫy: chunk sai làm retrieval kém; không trích nguồn khiến khó kiểm chứng.
+**Bài tập:** Dựng pipeline RAG chạy đầu-cuối bằng **OpenAI API** trên một bộ tài liệu nhỏ (notebook kèm sẵn "Sổ tay chính sách IT nội bộ" ~8 đoạn). Các bước:
+1. **Chunk** tài liệu thành đoạn hợp lý, mỗi chunk gắn `source_id`.
+2. **Embed** chunk bằng model `text-embedding-3-small` (`client.embeddings.create`).
+3. **Vector search:** tính **cosine similarity** giữa câu hỏi và các chunk (numpy), lấy top-k.
+4. **Sinh câu trả lời:** nhồi top-k vào prompt, yêu cầu model trả lời **chỉ dựa trên ngữ cảnh** và **trích nguồn** (`[source_id]`); nếu ngữ cảnh không chứa thông tin thì trả lời "không tìm thấy trong tài liệu" (không được bịa).
+5. Đóng gói thành **1 hàm `answer(query)`** trả về `(câu trả lời, danh sách nguồn)`.
+**Hướng dẫn đáp án:** Chunk hợp lý (không quá to/nhỏ); embed + tìm theo cosine similarity; nhồi đoạn liên quan vào prompt và yêu cầu trả lời **chỉ dựa trên ngữ cảnh**, kèm nguồn. Bẫy: chunk sai làm retrieval kém; không trích nguồn khiến khó kiểm chứng; **câu hỏi ngoài phạm vi phải trả "không biết" thay vì bịa** (sẽ được kiểm ở Ngày 10).
+**Cách nộp bài:** Nộp `docs/day9.ipynb` (khung sẵn: corpus + chunk + embed + `retrieve` + `answer`). **Restart & Run All** không lỗi; key trong env var; commit trên `feature/huynq`.
 **DoD:**
 - [ ] Hỏi–đáp chạy được trên bộ tài liệu; câu trả lời kèm nguồn.
-- [ ] Pipeline chạy end-to-end bằng 1 lệnh/1 hàm.
+- [ ] Pipeline chạy end-to-end bằng 1 lệnh/1 hàm (`answer(query)`).
 
 ### Ngày 10 — Đánh giá (eval) + review tuần ⏱ cả ngày
 **Mục tiêu:** Đo chất lượng giải pháp AI một cách khách quan.
-**Bài tập:** Tạo eval set ≥15 câu hỏi có đáp án tham chiếu cho RAG ngày 9. Đo độ đúng + độ bám nguồn (groundedness), phân tích lỗi. Review tuần.
-**Hướng dẫn đáp án:** Định nghĩa tiêu chí (đúng/sai, có bịa không, có bám nguồn không); chấm thủ công hoặc LLM-as-judge; phân loại lỗi (retrieval sai vs generation bịa). Báo cáo tốt nêu ≥3 lỗi điển hình + đề xuất cải thiện khả thi.
+**Bài tập:** Tạo **eval set ≥15 câu hỏi + đáp án tham chiếu** cho RAG Ngày 9 (notebook kèm sẵn khung + vài câu mẫu, **có ≥1 câu ngoài phạm vi** để bắt lỗi bịa). Chạy RAG trên toàn bộ eval set, chấm bằng **LLM-as-judge** (OpenAI) theo 2 tiêu chí:
+1. **Correct** — câu trả lời có khớp đáp án tham chiếu không.
+2. **Grounded** — có bám vào nguồn được trích, **không bịa** (câu ngoài phạm vi phải trả "không biết").
+Tính **điểm tổng** (accuracy, groundedness rate, tỉ lệ bịa), rồi **phân tích ≥3 lỗi điển hình**, phân biệt **lỗi retrieval** (lấy sai đoạn) vs **lỗi generation** (đoạn đúng nhưng model bịa/hiểu sai).
+**Hướng dẫn đáp án:** Định nghĩa tiêu chí (đúng/sai, có bịa không, có bám nguồn không); chấm thủ công hoặc **LLM-as-judge** (JSON mode, `temperature=0`); phân loại lỗi (retrieval sai vs generation bịa). Báo cáo tốt nêu ≥3 lỗi điển hình + đề xuất cải thiện khả thi (VD chỉnh kích thước chunk, tăng k, siết prompt).
+**Cách nộp bài:** Nộp `docs/day10.ipynb` (khung sẵn: eval set mẫu + hàm judge + tổng hợp metric + bảng phân tích lỗi). Kết nối RAG Ngày 9 qua `%run day9.ipynb`. **Restart & Run All** không lỗi; commit trên `feature/huynq`.
 **DoD:**
 - [ ] Eval set ≥15 câu có đáp án tham chiếu.
 - [ ] Báo cáo: điểm tổng + tỉ lệ trả lời sai/bịa + ≥3 ví dụ lỗi + đề xuất.
