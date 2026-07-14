@@ -13,7 +13,7 @@
 ### Ngày 1 — Onboarding & môi trường ⏱ cả ngày
 **Mục tiêu:** Sẵn sàng môi trường làm việc; nắm quy trình Git cơ bản; hiểu vai trò FDE.
 
-**Bài tập:**
+**Bài tập :** 
 0. **Gửi email lịch làm việc tuần** (06/07 → 11/07) cho chị huyenctn@v365.vn.
 1. **Thiết lập môi trường & làm quen Git:**
    - Cài Python + virtualenv, Jupyter/VS Code, Git.

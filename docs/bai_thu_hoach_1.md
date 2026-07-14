@@ -1,0 +1,11 @@
+# Bài thu hoạch: FDE làm gì?
+
+FDE (Forward Deployment Engineer) là kỹ sư triển khai các giải pháp AI và phần mềm đến môi trường thực tế của khách hàng. Đây là vị trí kết nối giữa đội ngũ phát triển sản phẩm và khách hàng, vừa đảm nhận các công việc kỹ thuật, vừa tham gia tư vấn để đảm bảo giải pháp đáp ứng đúng nhu cầu và có thể vận hành hiệu quả.
+
+Về mặt kỹ thuật, FDE chịu trách nhiệm triển khai hệ thống, tích hợp mô hình AI với cơ sở dữ liệu, API và các hệ thống hiện có của doanh nghiệp. Công việc bao gồm xử lý dữ liệu, xây dựng hoặc tối ưu pipeline, cấu hình môi trường triển khai, kiểm tra hoạt động của hệ thống, theo dõi hiệu năng và khắc phục các lỗi phát sinh. Ngoài ra, FDE còn phối hợp với các nhóm Backend, Data Engineer và AI Engineer để đảm bảo việc triển khai diễn ra thuận lợi và ổn định.
+
+Bên cạnh đó, FDE còn đóng vai trò tư vấn và làm việc trực tiếp với khách hàng. Trước khi triển khai, FDE cần tìm hiểu quy trình nghiệp vụ, làm rõ yêu cầu và đề xuất giải pháp phù hợp. Trong quá trình thực hiện, FDE có thể trình diễn (demo) sản phẩm, giải thích cách hệ thống hoạt động, tiếp nhận phản hồi và điều chỉnh theo nhu cầu thực tế. Sau khi hoàn thành, FDE hướng dẫn khách hàng sử dụng, bàn giao hệ thống, hỗ trợ vận hành và giải quyết các vấn đề phát sinh. Vì vậy, kỹ năng giao tiếp, trình bày và làm việc nhóm cũng quan trọng không kém kỹ năng lập trình.
+
+Để trở thành một FDE, cần có kiến thức về Python, SQL, Git, Linux, Docker, REST API và hiểu quy trình triển khai phần mềm. Đối với lĩnh vực AI, việc nắm được các khái niệm như Machine Learning, LLM, RAG và xử lý dữ liệu sẽ là một lợi thế. Đồng thời, FDE cần có khả năng phân tích yêu cầu, giải quyết vấn đề và thích nghi với các công nghệ mới.
+
+Qua tìm hiểu, em nhận thấy FDE là vị trí kết hợp giữa kỹ thuật và tư vấn. Một FDE không chỉ biết lập trình và triển khai hệ thống mà còn phải làm việc với khách hàng để hiểu nhu cầu, trình bày giải pháp, demo sản phẩm và bàn giao hệ thống hoàn chỉnh. Chính sự kết hợp giữa năng lực kỹ thuật và kỹ năng giao tiếp đã giúp FDE trở thành nhân tố quan trọng trong việc đưa các giải pháp AI và phần mềm vào ứng dụng thực tế một cách hiệu quả.
